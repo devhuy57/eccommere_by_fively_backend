@@ -1,0 +1,16 @@
+# PORT
+PORT=3000
+
+# MONGOOSE
+MONGOOSE_URI=mongodb://localhost:27017/ecommere_by_fively?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+
+# WEBTOKEN
+PASSPORT_SERECT=df47638af9dc1bfaf223703b111ef3b504e03a309967936363a8db2f
+
+# GOOGLE CLIENTS
+GOOGLE_CLIENT_ID=585199978695-fvmn90848gr7mm2vdkqd1l5uqaquc2fk.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GoXtp3Y2Wus5W2fbnk8pMYbV
+
+# NODE MAILER
+EMAIL=
+EMAIL_PASSWORD=
