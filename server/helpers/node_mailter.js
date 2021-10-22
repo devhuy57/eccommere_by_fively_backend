@@ -44,7 +44,9 @@ let senMail = function (from, to, subject, template) {
         }
         smtpTransport.sendMail(options, function (err, success) {
             if (err) reject(Error(`${err}`))
+            console.log("🚀 ~ file: node_mailter.js ~ line 47 ~ err", err)
             if (success) resolve(success)
+            console.log("🚀 ~ file: node_mailter.js ~ line 48 ~ success", success)
         });
     })
 };

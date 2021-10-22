@@ -17,4 +17,10 @@ router.route('/cart')
     .put(passport.authenticate('jwt', { session: false }), cartController.updateMyCart)
 
 
+router.route('/favorites')
+    .post(passport.authenticate('jwt', { session: false }), userController.addFavorites)
+    .get(passport.authenticate('jwt', { session: false }), userController.myFavorites)
+
+
+
 module.exports = router

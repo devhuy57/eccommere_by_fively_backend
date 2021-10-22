@@ -49,5 +49,5 @@ app.use((err, req, res, next) => {
 
 // Start server
 // app.listen(PORT, "192.168.3.11")
-app.listen(PORT, "192.168.1.92")
-// app.listen(PORT)
+// app.listen(PORT, "192.168.1.92")
+app.listen(PORT)

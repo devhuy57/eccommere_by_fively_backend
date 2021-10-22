@@ -55,18 +55,37 @@ let userSchema = new Schema({
         type: String,
         default: "",
     },
-    carts: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'carts'
-        }
-    ]
+    carts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'carts'
+    }],
+    code: {
+        type: String,
+        length: 6
+    },
+    expriod: {
+        type: Date,
+    },
+    favorites: [{
+        type: Schema.Types.ObjectId,
+        ref: "products"
+    }],
+    emailVerified: {
+        type: Date,
+        default: null,
+    },
+    phoneVerified: {
+        type: Date,
+        default: null,
+    }
 }, {
     timestamps: true,
     toJSON: {
         transform: (doc, ret) => {
             delete ret.__v
             delete ret.logical_delete
+            delete ret.code
+            delete ret.expriod
             return ret;
         },
     }
@@ -102,6 +121,9 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 })
 
 
+userSchema.pre('find', async function (docs) {
+    this.populate('favorites')
+});
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
     try {

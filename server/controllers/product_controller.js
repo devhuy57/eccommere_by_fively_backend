@@ -3,11 +3,7 @@ let ProductModel = require('../models/product_model')
 
 
 let product = async (req, res) => {
-    let products = await ProductModel.findById(req.params.productId)
-        .populate([
-            'categories',
-            // 'attributes'
-        ])
+    let products = await ProductModel.findOne({ _id: req.params.productId })
 
     res.status(200).json({
         status: 200,

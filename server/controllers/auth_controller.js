@@ -31,7 +31,7 @@ let changePassword = async (req, res, next) => {
 // 
 let login = async (req, res) => {
     let { email, password } = req.body
-    let user = await UserModel.findOne({ email })
+    let user = await UserModel.findOne({ email: email })
     if (user) {
         let checkMatchPassword = await user.comparePassword(password);
         if (checkMatchPassword) {
