@@ -1,6 +1,7 @@
 const UserModel = require("../models/user_model")
 let ProuductModel = require('../models/product_model')
 let path = require('path');
+const { sendMail } = require("../helpers/node_mailter");
 
 let addFavorites = async (req, res, next) => {
     let productId = req.body.productId
@@ -34,6 +35,7 @@ let addFavorites = async (req, res, next) => {
 
 // 
 let profile = async (req, res, next) => {
+    
     let userInfo = await UserModel.aggregate([
         {
             $match: {
@@ -54,8 +56,6 @@ let profile = async (req, res, next) => {
                 avatar: 1,
                 emailVerified: 1,
                 phoneVerified: 1,
-
-
             }
         }
     ])

@@ -59,11 +59,11 @@ let userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'carts'
     }],
-    code: {
+    emailCode: {
         type: String,
         length: 6
     },
-    expriod: {
+    emailExpired: {
         type: Date,
     },
     favorites: [{
