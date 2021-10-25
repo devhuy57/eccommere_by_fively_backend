@@ -1,6 +1,8 @@
+const { PAGE_SIZE } = require("../configs/app_config")
+
 let paginateHelper = async (req, model, condiction = {}, populate = {}) => {
     let page = parseInt(req.query.page)
-    let limit = parseInt(req.query.pageSize)
+    let limit = parseInt(req.query.pageSize) > 0 ? parseInt(req.query.pageSize) : PAGE_SIZE
 
     let startIndex = (page - 1) * limit
     let endIndex = page * limit
@@ -14,7 +16,7 @@ let paginateHelper = async (req, model, condiction = {}, populate = {}) => {
             .populate(populate)
             .skip(startIndex)
             .limit(endIndex)
-
+n
         if (items.length <= 0) return false;
         result = {
             totalPage: totalPage,

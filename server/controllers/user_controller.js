@@ -2,6 +2,8 @@ const UserModel = require("../models/user_model")
 let ProuductModel = require('../models/product_model')
 let path = require('path');
 const { sendMail } = require("../helpers/node_mailter");
+const mail_thread = require("../threads/mail_thread");
+const { generateVerifiedCode } = require("../helpers/auth_helper");
 
 let addFavorites = async (req, res, next) => {
     let productId = req.body.productId
@@ -35,7 +37,7 @@ let addFavorites = async (req, res, next) => {
 
 // 
 let profile = async (req, res, next) => {
-    
+
     let userInfo = await UserModel.aggregate([
         {
             $match: {
@@ -60,7 +62,18 @@ let profile = async (req, res, next) => {
         }
     ])
 
+    let verifiedCode = generateVerifiedCode()
+    let data = {
+        to: "fxhuytran99@gmail.com",
+        subject: "Verified Account",
+        templateVars: {
+            verifiedCode: verifiedCode
+        }
+    }
+    console.log("🚀 ~ file: user_controller.js ~ line 73 ~ profile ~ data", data)
+    // await sendMail({ template: "template1", ...data });
 
+    await mail_thread({ template: "template1", ...data })
 
     return res.status(200).json({
         status: 200,
