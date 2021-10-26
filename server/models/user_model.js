@@ -77,7 +77,11 @@ let userSchema = new Schema({
     phoneVerified: {
         type: Date,
         default: null,
-    }
+    },
+    orders: [{
+        type:  mongoose.Schema.Types.ObjectId,
+        ref: "products"
+    }]
 }, {
     timestamps: true,
     toJSON: {

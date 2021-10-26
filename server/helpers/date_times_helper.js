@@ -1,7 +1,6 @@
-let addHourDateTimeNow = (hour) => {
-    let myDate = new Date()
-    return myDate.setHours(myDate.getHours() + 1);
-}
+let addMinWithNow = (total) => new Date().setHours(new Date().getMinutes() + total)
+
+let addDateWithNow = (total) => new Date().setDate(new Date().getDate() + total)
 
 let compareDateNow = (date) => {
     let now = new Date()
@@ -19,7 +18,11 @@ let compareDateNow = (date) => {
 }
 
 
+let getNowToNumber = () => new Date().getTime()  
+
 module.exports = {
-    addHourDateTimeNow,
-    compareDateNow
+    addMinWithNow,
+    compareDateNow,
+    addDateWithNow,
+    getNowToNumber
 }

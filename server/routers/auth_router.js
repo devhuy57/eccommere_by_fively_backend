@@ -20,4 +20,14 @@ router.route('/verified/sendmail')
 router.route('/verified/email')
     .post(authController.onVerifiedEmail)
 
+
+router.route('/forgot-password')
+    .post(authController.forgotPasswordRequest)
+
+router.route('/verify-forgot-password')
+    .post(authController.veryfyCodeResetPassword)
+
+router.route('/reset-password')
+    .post(authController.resetPassword)
+
 module.exports = router
