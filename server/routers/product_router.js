@@ -9,7 +9,7 @@ router.route("")
 
 router.route("/:productId")
     .get(productController.product)
-
+    .delete(productController.deleteProduct)
 router.route("/:productId/attributes")
     .get(productController.productAtributes)
 module.exports = router
