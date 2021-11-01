@@ -42,6 +42,13 @@ let productSchema = new Schema({
     rating: {
         type: Number,
         default: 0
+    },
+    background: {
+        type: String,
+    },
+    quantity: {
+        type: Number,
+        default: 0,
     }
 }, {
     timestamps: true,

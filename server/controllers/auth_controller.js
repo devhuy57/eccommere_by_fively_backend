@@ -101,6 +101,7 @@ let signUp = async (req, res, next) => {
     }
 
     let newUser = await new UserModel({ firstName, lastName, email, password, phoneNumber })
+    console.log("🚀 ~ file: auth_controller.js ~ line 104 ~ signUp ~ newUser", newUser)
     await newUser.save()
 
     let token = encodeedToken(newUser._id)

@@ -16,12 +16,24 @@ let productSeed = async () => {
         for (j = 0; j < 5; j++) {
             let attribute = new ProductAttrModel({
                 description: faker.lorem.paragraphs(),
-                likes: faker.datatype.number()
+                likes: faker.datatype.number(),
             })
 
             await attribute.save()
             attributes.push(attribute._id)
         }
+
+        let images = [
+            'product/img_product.png',
+            'product/product1.png',
+            'product/product2.png',
+            'product/product3.png',
+            'product/product4.png',
+            'product/product5.png',
+            'product/product6.png',
+            'product/product7.png',
+            'product/product8.png',
+        ]
 
         let product = new ProductModel({
             productId: await generateSequence('PR', category[0].shortName),
@@ -30,6 +42,7 @@ let productSeed = async () => {
             attributes: attributes,
             categories: [category[0]._id],
             price: faker.commerce.price(),
+            avatar: images[Math.floor(Math.random() * images.length)]
         })
         // 
         await product.save()

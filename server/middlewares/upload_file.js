@@ -1,12 +1,12 @@
 const multer = require('multer')
 let path = require('path')
-let { open } = require('fs')
+let { open, fs, mkdir } = require('fs')
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = `uploads/${file.fieldname}`
         open(dir, eror => {
             if (eror) {
-                return fs.mkdir(dir, error => cb(error, dir))
+                return mkdir(dir, error => cb(error, dir))
             }
             return cb(null, dir)
         })
