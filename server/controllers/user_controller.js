@@ -1,6 +1,9 @@
 const UserModel = require("../models/user_model")
 let ProuductModel = require('../models/product_model')
 let path = require('path');
+const { sendMail } = require("../helpers/node_mailter");
+const mail_thread = require("../threads/mail_thread");
+const { generateVerifiedCode } = require("../helpers/auth_helper");
 
 let addFavorites = async (req, res, next) => {
     let productId = req.body.productId
@@ -34,39 +37,80 @@ let addFavorites = async (req, res, next) => {
 
 // 
 let profile = async (req, res, next) => {
+
     let userInfo = await UserModel.aggregate([
-        {
-            $match: {
-                _id: req.user._id
-            }
-        },
+
         {
             $project: {
-                carts: { $size: "$carts" },
+                // carts: { $size: "$carts" },
                 favorites: { $size: "$favorites" },
                 payments: { $size: "$payments" },
                 address: { $size: "$address" },
                 reviews: { $size: "$reviews" },
+                orders: 1,
                 firstName: 1,
                 lastName: 1,
                 phoneNumber: 1,
                 email: 1,
                 avatar: 1,
-                emailVerified: 1,
+                emailVerified: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$emailVerified" } },
                 phoneVerified: 1,
-
-
             }
-        }
+        },
+        {
+            $match: {
+                _id: req.user._id
+            }
+        },
+        { $limit: 1 },
+        {
+            $lookup: {
+                "from": "carts",
+                "localField": "_id",
+                "foreignField": "userId",
+                "as": "myCarts"
+            }
+        },
+        {
+            $lookup: {
+                "from": "orders",
+                "localField": "_id",
+                "foreignField": "userId",
+                "as": "myOrders"
+            }
+        },
+        {
+            $addFields: {
+                carts: { $size: "$myCarts" },
+                orders: { $size: "$myOrders" }
+            }
+        },
+        {
+            $project: {
+                myCarts: 0,
+                myOrders: 0,
+            }
+        },
     ])
 
+    // let verifiedCode = generateVerifiedCode()
+    // let data = {
+    //     to: "fxhuytran99@gmail.com",
+    //     subject: "Verified Account",
+    //     templateVars: {
+    //         verifiedCode: verifiedCode
+    //     }
+    // }
+    // console.log("🚀 ~ file: user_controller.js ~ line 73 ~ profile ~ data", data)
+    // // await sendMail({ template: "template1", ...data });
 
+    // await mail_thread({ template: "template1", ...data })
 
     return res.status(200).json({
         status: 200,
         success: true,
         message: "",
-        data: userInfo
+        data: userInfo[0]
     })
 }
 

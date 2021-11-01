@@ -33,6 +33,22 @@ let productSchema = new Schema({
     logical_delete: {
         type: Date,
         default: null
+    },
+    sale: {
+        type: Number,
+        max: 100,
+        default: 0,
+    },
+    rating: {
+        type: Number,
+        default: 0
+    },
+    background: {
+        type: String,
+    },
+    quantity: {
+        type: Number,
+        default: 0,
     }
 }, {
     timestamps: true,
