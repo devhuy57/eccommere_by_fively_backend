@@ -34,7 +34,7 @@
     "express-promise-router": "^4.1.0",
     "faker": "^5.5.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.10",
+    "mongoose": "^5.13.7",
     "nodemon": "^2.0.13",
     "passport": "0.4.1",
     "passport-google-plus-token": "^2.1.0",
