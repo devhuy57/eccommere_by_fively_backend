@@ -2,32 +2,33 @@ let router = require('express-promise-router')()
 let authController = require('../controllers/auth_controller')
 let passport = require('passport')
 let passportConfig = require('../middlewares/passport')
-
+let authSchemas = require('../validators/auth_validator')
+const { validatorBody } = require('../validators/base')
 // 
 router.route("/login")
-    .post(authController.login)
+    .post(validatorBody(authSchemas.signIn), authController.login)
 
 router.route('/register')
-    .post(authController.signUp)
+    .post(validatorBody(authSchemas.signUp), authController.signUp)
 
-router.route('/change-password').post(passport.authenticate('jwt', { session: false }), authController.changePassword)
+router.route('/change-password').post(passport.authenticate('jwt', { session: false }), validatorBody(authSchemas.changePassword), authController.changePassword)
 
 router.route('/serect').get(passport.authenticate('jwt', { session: false }), authController.serect)
 
 router.route('/verified/sendmail')
-    .post(authController.emailVerifiedSendMail)
+    .post(validatorBody(authSchemas.sendmail), authController.emailVerifiedSendMail)
 
 router.route('/verified/email')
-    .post(authController.onVerifiedEmail)
+    .post(validatorBody(authSchemas.verifyMail), authController.onVerifiedEmail)
 
 
 router.route('/forgot-password')
-    .post(authController.forgotPasswordRequest)
+    .post(validatorBody(authSchemas.sendmail), authController.forgotPasswordRequest)
 
 router.route('/verify-forgot-password')
-    .post(authController.veryfyCodeResetPassword)
+    .post(validatorBody(authSchemas.verifyMail), authController.veryfyCodeResetPassword)
 
 router.route('/reset-password')
-    .post(authController.resetPassword)
+    .post(validatorBody(authSchemas.resetPassword), authController.resetPassword)
 
 module.exports = router

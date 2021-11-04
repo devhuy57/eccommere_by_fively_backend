@@ -20,8 +20,9 @@ let encodeedToken = (userID, authen = true) => {
 // : addDateWithNow(5)
 
 let changePassword = async (req, res, next) => {
-    let { oldPassword, newPassword, passwordConfirm } = req.body
-    if (oldPassword && newPassword === passwordConfirm) {
+    let { oldPassword, newPassword, confirmPassword } = req.body
+
+    if (oldPassword && newPassword === confirmPassword) {
         let user = await UserModel.findById(req.user.id)
         let checkMatchPassword = await user.comparePassword(oldPassword);
 
@@ -31,6 +32,12 @@ let changePassword = async (req, res, next) => {
                 status: 200,
                 message: "",
                 success: true,
+            })
+        } else {
+            return res.status(301).json({
+                status: 301,
+                message: "",
+                success: false,
             })
         }
     }
@@ -44,7 +51,7 @@ let changePassword = async (req, res, next) => {
 
 // 
 let login = async (req, res) => {
-    let { email, password } = req.body
+    let { email, password } = req.value.body
     let user = await UserModel.findOne({ email: email })
     if (user) {
         let checkMatchPassword = await user.comparePassword(password);
