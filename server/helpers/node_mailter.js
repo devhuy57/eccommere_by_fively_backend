@@ -1,7 +1,10 @@
 require('dotenv').config();
-let nodemailer = require('nodemailer');
-let hbs = require('nodemailer-express-handlebars');
-let events = require('events')
+const nodemailer = require("nodemailer");
+const fs = require("fs");
+const ejs = require("ejs");
+const { convert } = require("html-to-text");
+const juice = require("juice");
+
 // Step 1
 var smtpTransport = nodemailer.createTransport({
     service: "gmail",
@@ -11,46 +14,28 @@ var smtpTransport = nodemailer.createTransport({
     }
 });
 
-// Step 2
-smtpTransport.use('hbs', hbs({
-    viewEngine: 'express-handlebars',
-    extname: "hbs",
-    defaultLayout: false,
-    viewPath: 'views/mail',
-    layoutsDir: 'views/mail',
-}));
 
+let sendMail = function ({
+    template: templateName,
+    templateVars,
+    ...restOfOptions
+}) {
+    const templatePath = `server/templates/mail/${templateName}.html`;
+    const options = {
+        from: process.env.EMAIL,
+        ...restOfOptions,
+    };
 
-// Step 3
-let mailOptions = {
-    from: process.env.EMAIL,
-    to: 'fxhuytran99@gmail.com',
-    subject: 'Nodemailer - Test',
-    text: 'Wooohooo it works!!',
-    template: 'password_change',
-    context: {
-        name: 'Accime Esterling'
-    } // send extra values to template
-};
+    if (templateName && fs.existsSync(templatePath)) {
+        const template = fs.readFileSync(templatePath, "utf-8");
+        const html = ejs.render(template, templateVars);
+        const htmlWithStylesInlined = juice(html);
+        options.html = htmlWithStylesInlined;
+    }
 
-
-let senMail = function (from, to, subject, template) {
-    return new Promise(function (resolve, reject) {
-        var options = {
-            from: from,
-            to: to,
-            subject: subject,
-            template: template
-        }
-        smtpTransport.sendMail(options, function (err, success) {
-            if (err) reject(Error(`${err}`))
-            console.log("🚀 ~ file: node_mailter.js ~ line 47 ~ err", err)
-            if (success) resolve(success)
-            console.log("🚀 ~ file: node_mailter.js ~ line 48 ~ success", success)
-        });
-    })
+    return smtpTransport.sendMail(options);
 };
 
 module.exports = {
-    senMail
+    sendMail
 }

@@ -1,5 +1,6 @@
 let CategoryModel = require('../models/category_model')
 let mongoose = require('mongoose')
+const paginateHelper = require('../helpers/paginate_helper')
 
 let category = async (req, res) => {
     let category = await CategoryModel.aggregate([
@@ -61,6 +62,20 @@ let categories = async (req, res) => {
     })
 }
 
+let getCategoryChilds = async (req, res) => {
+    let condiction = { logical_delete: { $exists: true }, parentId: { $ne: null } }
+    let sort = { name: 1 }
+    let categoryChilds = await paginateHelper(req, CategoryModel, condiction, [], sort)
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: categoryChilds
+    })
+}
+
+
 let productOfCategory = async (req, res) => {
     let categories = await CategoryModel.aggregate([
         {
@@ -107,4 +122,5 @@ module.exports = {
     category,
     categories,
     productOfCategory,
+    getCategoryChilds
 }

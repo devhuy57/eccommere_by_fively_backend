@@ -4,6 +4,9 @@ let categoryController = require('../controllers/category_controller')
 router.route('')
     .get(categoryController.categories)
 
+router.route('/childs')
+    .get(categoryController.getCategoryChilds)
+
 router.route('/:id')
     .get(categoryController.category)
 
