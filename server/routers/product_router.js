@@ -10,6 +10,13 @@ router.route("")
 router.route("/:productId")
     .get(productController.product)
     .delete(productController.deleteProduct)
+
 router.route("/:productId/attributes")
     .get(productController.productAtributes)
+    .post(multer({ storage: storage, fileFilter: imageFilter }).single('product_attrbutes'), productController.addProductAttrbute)
+
+router.route('/:productId/attributes/:attributeId')
+    .put(multer({ storage: storage, fileFilter: imageFilter }).single('product_attrbutes'), productController.updateAtrribute)
+    .delete(productController.deleteAttrbuteProduct)
+
 module.exports = router

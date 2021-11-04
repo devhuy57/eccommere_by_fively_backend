@@ -2,6 +2,10 @@ let mongoose = require('mongoose')
 let Schema = mongoose.Schema
 
 let productAttributeSchema = new Schema({
+    title: {
+        type: String,
+        default: "",
+    },
     imageUrl: {
         type: String,
         default: "product/img_product.png",
