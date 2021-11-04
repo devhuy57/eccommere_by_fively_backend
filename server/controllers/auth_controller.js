@@ -84,7 +84,7 @@ let signUp = async (req, res, next) => {
 
     if (email) {
         let foundUser = await UserModel.findOne({ email })
-        if (foundUser) return res.status(200).json({
+        if (foundUser) return res.status(301).json({
             message: "Email is exists!",
             success: false,
             status: 301
@@ -93,7 +93,7 @@ let signUp = async (req, res, next) => {
 
     if (phoneNumber) {
         let foundUser = await UserModel.findOne({ phoneNumber })
-        if (foundUser) return res.status(200).json({
+        if (foundUser) return res.status(302).json({
             message: "Phone Number is exists!",
             success: false,
             status: 302
@@ -101,7 +101,6 @@ let signUp = async (req, res, next) => {
     }
 
     let newUser = await new UserModel({ firstName, lastName, email, password, phoneNumber })
-    console.log("🚀 ~ file: auth_controller.js ~ line 104 ~ signUp ~ newUser", newUser)
     await newUser.save()
 
     let token = encodeedToken(newUser._id)

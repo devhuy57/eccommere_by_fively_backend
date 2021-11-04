@@ -15,7 +15,6 @@ let createProduct = async (req, res) => {
 
     if (categoryFind) {
         productId = await generateSequence('PR', categoryFind.shortName)
-
         let newProduct = await ProductModel({
             productName: productName,
             quantity: quantity,
@@ -27,7 +26,6 @@ let createProduct = async (req, res) => {
             productId: productId
         })
 
-        console.log("🚀 ~ file: product_controller.js ~ line 30 ~ createProduct ~ newProduct.save()", await newProduct.save())
         await newProduct.save()
 
         res.status(200).json({
@@ -47,19 +45,20 @@ let createProduct = async (req, res) => {
     }
 }
 
-let deleteProduct = async () => {
-    await ProductModel.findOneAndDelete({ _id: req.params.productId })
+let deleteProduct = async (req, res) => {
+    await ProductModel.findByIdAndRemove(req.params.productId)
     res.status(200).json({
         status: 200,
         success: true,
         message: "",
-        data: null
+        data: {
+            productId: req.params.productId
+        }
     })
 }
 
 let product = async (req, res) => {
-    let products = await ProductModel.findOne({ _id: req.params.productId })
-
+    let products = await ProductModel.findOne({ productId: req.params.productId }).populate(['categories', 'attributes'])
     res.status(200).json({
         status: 200,
         success: true,
@@ -70,11 +69,11 @@ let product = async (req, res) => {
 
 let products = async (req, res) => {
     condiction = {}
-    if (req.query.search) {
-        condiction.productName = { $regex: `.*${req.query.search}*.` }
+    if (req.query.search && req.query.search !== "undefined") {
+        condiction.productName = { $regex: new RegExp(req.query.search, 'i') }
     }
 
-    let products = await paginateHelper(req, ProductModel, condiction, ['categories'], { productName: 1 })
+    let products = await paginateHelper(req, ProductModel, condiction, ['categories'], { productName: 0 })
     res.status(200).json({
         status: 200,
         success: true,
@@ -96,10 +95,79 @@ let productAtributes = async (req, res) => {
 }
 
 
+let updateAtrribute = async (req, res) => {
+    let { attributeId } = req.params
+    let { title, description } = req.body
+    let attrbute = await ProductAttrModel.findById(mongoose.Types.ObjectId(attributeId))
+    if (attrbute) {
+        attrbute.title = title
+        attrbute.description = description
+        if (req.file) {
+            attrbute.imageUrl = converterServerToRealPath(req.file.path)
+        }
+        await attrbute.save()
+    }
+    let product = await ProductModel.findOne({ productId: req.params.productId }).populate(['categories', 'attributes'])
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: product
+    })
+}
+
+
+let addProductAttrbute = async (req, res) => {
+    let { title, description } = req.body
+
+    let attrbute = new ProductAttrModel({
+        title: title,
+        description: description,
+        imageUrl: converterServerToRealPath(req.file.path)
+    })
+
+    let product = await ProductModel.findOne({ productId: req.params.productId })
+    if (product) {
+        product.attributes.push(attrbute._id)
+        await product.save()
+        await attrbute.save()
+    }
+
+    let resutl = await ProductModel.findOne({ productId: req.params.productId }).populate(['categories', 'attributes'])
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: resutl
+    })
+}
+
+
+let deleteAttrbuteProduct = async (req, res) => {
+    let { productId, attributeId } = req.params
+    let result = await ProductModel.updateOne(
+        { productId: productId, attributes: { $in: [attributeId] } },
+        { $pull: { attributes: { $in: [attributeId] } } })
+    if (result.modifiedCount >= 1) {
+        await ProductAttrModel.findByIdAndRemove(attributeId)
+    }
+    let product = await ProductModel.findOne({ productId: req.params.productId }).populate(['categories', 'attributes'])
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: product
+    })
+}
+
 module.exports = {
     products,
     product,
     productAtributes,
     createProduct,
-    deleteProduct
+    deleteProduct,
+    updateAtrribute,
+    addProductAttrbute,
+    deleteAttrbuteProduct
 }
