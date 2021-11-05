@@ -4,6 +4,10 @@ let path = require('path');
 const { sendMail } = require("../helpers/node_mailter");
 const mail_thread = require("../threads/mail_thread");
 const { generateVerifiedCode } = require("../helpers/auth_helper");
+const paginateHelper = require("../helpers/paginate_helper");
+const mongoose = require('mongoose')
+var NumberInt = require('mongoose-int32');
+
 
 let addFavorites = async (req, res, next) => {
     let productId = req.body.productId
@@ -140,9 +144,39 @@ let myFavorites = async (req, res) => {
     })
 }
 
+let getAllUsers = async (req, res) => {
+    condiction = {}
+    if (req.query.search && req.query.search !== "undefined") {
+        condiction.productName = { $regex: new RegExp(req.query.search, 'i') }
+    }
+
+    let users = await UserModel.aggregate(
+        [
+            {
+                $match: {
+                    logical_delete: { $exists: false }
+                }
+            },
+            // {
+            //     $facet: {
+            //         metadata: [{ $count: "total" }, { $addFields: { page: NumberInt(1) } }],
+            //         data: [{ $skip: 20 }, { $limit: 10 }] // add projection here wish you re-shape the docs
+            //     }
+            // }
+        ]
+    )
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: users
+    })
+}
 module.exports = {
     profile,
     updateProfile,
     addFavorites,
-    myFavorites
+    myFavorites,
+    getAllUsers
 }

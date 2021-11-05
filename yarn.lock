@@ -2246,6 +2246,11 @@ mongodb@4.1.2:
   optionalDependencies:
     saslprep "^1.0.3"
 
+mongoose-int32@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/mongoose-int32/-/mongoose-int32-0.5.0.tgz#288605b82d57018a49782381d218ce6b8729a809"
+  integrity sha512-lgqnu7H10Shsns2WLR1P3IzuDv3To7ZHXuayOffH0IW0O8SW4cpqx5AmAdiKNxl7UuwiGh3IH/v0DYzONJwowQ==
+
 mongoose@^6.0.10:
   version "6.0.10"
   resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-6.0.10.tgz#c22ac914afccf648778edfe11954f4aa0425a105"

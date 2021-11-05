@@ -79,9 +79,18 @@ let userSchema = new Schema({
         default: null,
     },
     orders: [{
-        type:  mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "products"
-    }]
+    }],
+    roles: {
+        type: String,
+        enum: ["user", "admin", "customer"],
+        default: "user"
+    },
+    logical_delete: {
+        type: Date,
+        default: null
+    },
 }, {
     timestamps: true,
     toJSON: {
