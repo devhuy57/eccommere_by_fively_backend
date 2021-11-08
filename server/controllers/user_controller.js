@@ -154,13 +154,14 @@ let getAllUsers = async (req, res) => {
         [
             {
                 $match: {
-                    logical_delete: { $exists: false }
+                    logical_delete: { $exists: true }
                 }
             },
             // {
             //     $facet: {
-            //         metadata: [{ $count: "total" }, { $addFields: { page: NumberInt(1) } }],
-            //         data: [{ $skip: 20 }, { $limit: 10 }] // add projection here wish you re-shape the docs
+
+            //         metadata: [{ $count: "total" }, { $addFields: { page: 1 } }],
+            //         data: [{ $skip: 1 }, { $limit: 10 }] //- add projection here wish you re-shape the docs
             //     }
             // }
         ]
