@@ -6,7 +6,7 @@ const mail_thread = require("../threads/mail_thread");
 const { generateVerifiedCode } = require("../helpers/auth_helper");
 const paginateHelper = require("../helpers/paginate_helper");
 const mongoose = require('mongoose')
-var NumberInt = require('mongoose-int32');
+const { converterServerToRealPath } = require('../helpers/converter_helper')
 
 
 let addFavorites = async (req, res, next) => {
@@ -121,8 +121,12 @@ let profile = async (req, res, next) => {
 // 
 let updateProfile = async (req, res, next) => {
     let { firstName, lastName, phoneNumber } = req.body
-    let avatar = path.normalize(req.file.path).split("\\").slice(1).join("/")
-    await UserModel.findByIdAndUpdate(req.user._id, { firstName, lastName, phoneNumber, avatar })
+    await UserModel.findByIdAndUpdate(req.user._id, { firstName, lastName, phoneNumber })
+
+    if (req.file) {
+        await UserModel.findByIdAndUpdate(req.user._id, { avatar: converterServerToRealPath(req.file.path) })
+    }
+
     let user = await UserModel.findById(req.user._id, { password: 0, __v: 0 })
 
     res.status(200).json({
@@ -154,13 +158,14 @@ let getAllUsers = async (req, res) => {
         [
             {
                 $match: {
-                    logical_delete: { $exists: false }
+                    logical_delete: { $exists: true }
                 }
             },
             // {
             //     $facet: {
-            //         metadata: [{ $count: "total" }, { $addFields: { page: NumberInt(1) } }],
-            //         data: [{ $skip: 20 }, { $limit: 10 }] // add projection here wish you re-shape the docs
+
+            //         metadata: [{ $count: "total" }, { $addFields: { page: 1 } }],
+            //         data: [{ $skip: 1 }, { $limit: 10 }] //- add projection here wish you re-shape the docs
             //     }
             // }
         ]

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@vonage/server-sdk": "^2.10.10",
     "bcryptjs": "^2.4.3",
     "concurrently": "^6.3.0",
     "dotenv": "^10.0.0",

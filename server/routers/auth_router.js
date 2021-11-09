@@ -31,4 +31,7 @@ router.route('/verify-forgot-password')
 router.route('/reset-password')
     .post(validatorBody(authSchemas.resetPassword), authController.resetPassword)
 
+router.route('/verified/send-phone')
+    .post(passport.authenticate('jwt', { session: false }), authController.sendPhoneVerifiedCode)
+
 module.exports = router

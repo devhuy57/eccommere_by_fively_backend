@@ -66,6 +66,13 @@ let userSchema = new Schema({
     emailExpired: {
         type: Date,
     },
+    phoneCode: {
+        type: String,
+        length: 6
+    },
+    phoneCodeExpired: {
+        type: Date,
+    },
     favorites: [{
         type: Schema.Types.ObjectId,
         ref: "products"
