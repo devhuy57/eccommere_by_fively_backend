@@ -161,6 +161,17 @@ let deleteAttrbuteProduct = async (req, res) => {
     })
 }
 
+let getProductAttibute = async (req, res) => {
+    let { productId, attributeId } = req.params
+    let product = await ProductModel.findOne({ productId: req.params.productId }).populate(['attributes']).select('attributes')
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: product
+    })
+}
+
 module.exports = {
     products,
     product,
@@ -169,5 +180,6 @@ module.exports = {
     deleteProduct,
     updateAtrribute,
     addProductAttrbute,
-    deleteAttrbuteProduct
+    deleteAttrbuteProduct,
+    getProductAttibute,
 }

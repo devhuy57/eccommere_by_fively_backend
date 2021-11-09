@@ -66,6 +66,13 @@ let userSchema = new Schema({
     emailExpired: {
         type: Date,
     },
+    phoneCode: {
+        type: String,
+        length: 6
+    },
+    phoneCodeExpired: {
+        type: Date,
+    },
     favorites: [{
         type: Schema.Types.ObjectId,
         ref: "products"
@@ -79,9 +86,18 @@ let userSchema = new Schema({
         default: null,
     },
     orders: [{
-        type:  mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "products"
-    }]
+    }],
+    roles: {
+        type: String,
+        enum: ["user", "admin", "customer"],
+        default: "user"
+    },
+    logical_delete: {
+        type: Date,
+        default: null
+    },
 }, {
     timestamps: true,
     toJSON: {

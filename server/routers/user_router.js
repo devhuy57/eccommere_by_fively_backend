@@ -6,6 +6,10 @@ const multer = require('multer')
 const storage = require("../middlewares/upload_file")
 const { imageFilter } = require("../helpers/image_filter")
 let cartController = require('../controllers/cart_controller')
+
+router.route('')
+    .get(passport.authenticate('jwt', { session: false }), userController.getAllUsers)
+
 router.route('/profile')
     .get(passport.authenticate('jwt', { session: false }), userController.profile)
     .post(passport.authenticate('jwt', { session: false }), multer({ storage: storage, fileFilter: imageFilter }).single('avatar'), userController.updateProfile)
