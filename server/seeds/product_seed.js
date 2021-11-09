@@ -42,7 +42,8 @@ let productSeed = async () => {
             attributes: attributes,
             categories: [category[0]._id],
             price: faker.commerce.price(),
-            avatar: images[Math.floor(Math.random() * images.length)]
+            avatar: images[Math.floor(Math.random() * images.length)],
+            quantity: faker.datatype.number(),
         })
         // 
         await product.save()

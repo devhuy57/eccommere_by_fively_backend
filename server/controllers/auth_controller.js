@@ -3,6 +3,7 @@ let JWT = require('jsonwebtoken')
 const { generateVerifiedCode } = require('../helpers/auth_helper')
 const { addMinWithNow, compareDateNow, addDateWithNow, getNowToNumber } = require('../helpers/date_times_helper')
 const MAIL = require('../helpers/node_mailter')
+const { sendSMS } = require('../helpers/vonage_sms_helper')
 let UserModel = require('../models/user_model')
 const FcmNotification = require('../threads/fcm_notification_thread')
 let PASSPORT_SERECT = process.env.PASSPORT_SERECT
@@ -360,6 +361,31 @@ let resetPassword = async (req, res) => {
 
 }
 
+
+let sendPhoneVerifiedCode = async (req, res) => {
+    let { phoneNumber } = req.body
+    // // let user = req.req.user
+    // let findUser = await UserModel.findOne({ phoneNumber: phoneNumber })
+    // // if (user._id == findUser._id) {
+    // let verifiedCode = generateVerifiedCode()
+    // findUser.phoneCode = verifiedCode
+    // findUser.phoneCodeExpired = addMinWithNow(50)
+    // await findUser.save()
+    await sendSMS()
+    return res.status(200).json({
+        status: 200,
+        message: "",
+        success: true,
+    })
+    // } else {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "",
+    //         success: false,
+    //     })
+    // }
+}
+
 module.exports = {
     login,
     signUp,
@@ -369,5 +395,6 @@ module.exports = {
     onVerifiedEmail,
     forgotPasswordRequest,
     veryfyCodeResetPassword,
-    resetPassword
+    resetPassword,
+    sendPhoneVerifiedCode,
 }
