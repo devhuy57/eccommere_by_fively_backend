@@ -10,11 +10,11 @@ let createProduct = async (req, res) => {
     let { productName, description, price, quantity, categoryIds } = req.body
     let avatar = converterServerToRealPath(req.files[0].path)
     let background = converterServerToRealPath(req.files[1].path)
-
+    categoryIds = categoryIds.split(',')
     let categoryFind = await CategoryModel(mongoose.Types.ObjectId(categoryIds[0]))
 
     if (categoryFind) {
-        productId = await generateSequence('PR', categoryFind.shortName)
+        productId = await generateSequence('PR', 'THH')
         let newProduct = await ProductModel({
             productName: productName,
             quantity: quantity,
