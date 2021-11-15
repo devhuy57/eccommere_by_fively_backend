@@ -7,21 +7,21 @@ const CategoryModel = require('../models/category_model')
 const generateSequence = require('../helpers/sequence_helper')
 
 let createProduct = async (req, res) => {
-    let { productName, description, price, quantity, category } = req.body
+    let { productName, description, price, quantity, categoryIds } = req.body
     let avatar = converterServerToRealPath(req.files[0].path)
     let background = converterServerToRealPath(req.files[1].path)
-
-    let categoryFind = await CategoryModel.findById(mongoose.Types.ObjectId(category))
+    categoryIds = categoryIds.split(',')
+    let categoryFind = await CategoryModel(mongoose.Types.ObjectId(categoryIds[0]))
 
     if (categoryFind) {
-        productId = await generateSequence('PR', categoryFind.shortName)
+        productId = await generateSequence('PR', 'THH')
         let newProduct = await ProductModel({
             productName: productName,
             quantity: quantity,
             background: background,
             avatar: avatar,
             price: price,
-            categories: [category],
+            categories: categoryIds,
             description: description,
             productId: productId
         })
