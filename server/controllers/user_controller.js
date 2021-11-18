@@ -1,9 +1,15 @@
 const UserModel = require("../models/user_model")
 let ProuductModel = require('../models/product_model')
-let path = require('path');
+let OrderModel = require('../models/order_model')
+let OrderDetails = require('../models/order_details')
 const { sendMail } = require("../helpers/node_mailter");
 const mail_thread = require("../threads/mail_thread");
 const { generateVerifiedCode } = require("../helpers/auth_helper");
+const paginateHelper = require("../helpers/paginate_helper");
+const mongoose = require('mongoose')
+const { converterServerToRealPath } = require('../helpers/converter_helper');
+const generateSequence = require("../helpers/sequence_helper");
+
 
 let addFavorites = async (req, res, next) => {
     let productId = req.body.productId
@@ -117,8 +123,12 @@ let profile = async (req, res, next) => {
 // 
 let updateProfile = async (req, res, next) => {
     let { firstName, lastName, phoneNumber } = req.body
-    let avatar = path.normalize(req.file.path).split("\\").slice(1).join("/")
-    await UserModel.findByIdAndUpdate(req.user._id, { firstName, lastName, phoneNumber, avatar })
+    await UserModel.findByIdAndUpdate(req.user._id, { firstName, lastName, phoneNumber })
+
+    if (req.file) {
+        await UserModel.findByIdAndUpdate(req.user._id, { avatar: converterServerToRealPath(req.file.path) })
+    }
+
     let user = await UserModel.findById(req.user._id, { password: 0, __v: 0 })
 
     res.status(200).json({
@@ -140,9 +150,89 @@ let myFavorites = async (req, res) => {
     })
 }
 
+let getAllUsers = async (req, res) => {
+    condiction = {}
+    if (req.query.search && req.query.search !== "undefined") {
+        condiction.productName = { $regex: new RegExp(req.query.search, 'i') }
+    }
+
+    let users = await UserModel.aggregate(
+        [
+            {
+                $match: {
+                    logical_delete: { $exists: true }
+                }
+            },
+            // {
+            //     $facet: {
+
+            //         metadata: [{ $count: "total" }, { $addFields: { page: 1 } }],
+            //         data: [{ $skip: 1 }, { $limit: 10 }] //- add projection here wish you re-shape the docs
+            //     }
+            // }
+        ]
+    )
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: users
+    })
+}
+
+let createOrder = async (req, res) => {
+    let uerId = req.user._id
+
+    let { address, phoneNumber, method, items } = req.value.body
+    let productIds = items.map(item => item.productId)
+
+    let productCheck = await ProuductModel.find({ productId: { $in: productIds } })
+
+    if (productCheck.length !== productIds.length) {
+        return res.status(400).json({
+            status: 400,
+            success: true,
+            message: "",
+            data: null
+        })
+    }
+
+    let order = new OrderModel({
+        userId: uerId,
+        orderId: await generateSequence("OD", "U"),
+        address: address,
+        phoneNumber: phoneNumber,
+        status: 1,
+        method: method,
+    })
+    await order.save()
+
+    items.map(item => {
+        console.log('item:', item)
+        let productItem = productCheck.find(product => product.productId.toString() === item.productId)
+        let orderItem = new OrderDetails({
+            orderId: order.orderId,
+            productId: item.productId,
+            quantity: item.quantity,
+            price: productItem.price,
+        })
+        orderItem.save()
+    })
+
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: order
+    })
+}
+
 module.exports = {
     profile,
     updateProfile,
     addFavorites,
-    myFavorites
+    myFavorites,
+    getAllUsers,
+    createOrder
 }

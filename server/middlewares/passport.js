@@ -8,7 +8,7 @@ let GooglePlushTokenStrategy = require('passport-google-plus-token')
 // 
 
 passport.use(new JwtStrategy({
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken('Authrization'),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken('Authorization'),
     secretOrKey: PASSPORT_SERECT
 }, async (payload, done) => {
     try {

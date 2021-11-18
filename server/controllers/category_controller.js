@@ -35,7 +35,7 @@ let category = async (req, res) => {
 let categories = async (req, res) => {
     let categories = await CategoryModel.aggregate([
         {
-            $sort: { order: 1 }
+            $sort: { shortName: 1 }
         },
         {
             $graphLookup: {

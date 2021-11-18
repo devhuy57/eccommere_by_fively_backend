@@ -3,6 +3,7 @@ let JWT = require('jsonwebtoken')
 const { generateVerifiedCode } = require('../helpers/auth_helper')
 const { addMinWithNow, compareDateNow, addDateWithNow, getNowToNumber } = require('../helpers/date_times_helper')
 const MAIL = require('../helpers/node_mailter')
+const { sendSMS } = require('../helpers/vonage_sms_helper')
 let UserModel = require('../models/user_model')
 const FcmNotification = require('../threads/fcm_notification_thread')
 let PASSPORT_SERECT = process.env.PASSPORT_SERECT
@@ -20,8 +21,9 @@ let encodeedToken = (userID, authen = true) => {
 // : addDateWithNow(5)
 
 let changePassword = async (req, res, next) => {
-    let { oldPassword, newPassword, passwordConfirm } = req.body
-    if (oldPassword && newPassword === passwordConfirm) {
+    let { oldPassword, newPassword, confirmPassword } = req.body
+
+    if (oldPassword && newPassword === confirmPassword) {
         let user = await UserModel.findById(req.user.id)
         let checkMatchPassword = await user.comparePassword(oldPassword);
 
@@ -31,6 +33,12 @@ let changePassword = async (req, res, next) => {
                 status: 200,
                 message: "",
                 success: true,
+            })
+        } else {
+            return res.status(301).json({
+                status: 301,
+                message: "",
+                success: false,
             })
         }
     }
@@ -44,7 +52,7 @@ let changePassword = async (req, res, next) => {
 
 // 
 let login = async (req, res) => {
-    let { email, password } = req.body
+    let { email, password } = req.value.body
     let user = await UserModel.findOne({ email: email })
     if (user) {
         let checkMatchPassword = await user.comparePassword(password);
@@ -84,7 +92,7 @@ let signUp = async (req, res, next) => {
 
     if (email) {
         let foundUser = await UserModel.findOne({ email })
-        if (foundUser) return res.status(200).json({
+        if (foundUser) return res.status(301).json({
             message: "Email is exists!",
             success: false,
             status: 301
@@ -93,7 +101,7 @@ let signUp = async (req, res, next) => {
 
     if (phoneNumber) {
         let foundUser = await UserModel.findOne({ phoneNumber })
-        if (foundUser) return res.status(200).json({
+        if (foundUser) return res.status(302).json({
             message: "Phone Number is exists!",
             success: false,
             status: 302
@@ -101,7 +109,6 @@ let signUp = async (req, res, next) => {
     }
 
     let newUser = await new UserModel({ firstName, lastName, email, password, phoneNumber })
-    console.log("🚀 ~ file: auth_controller.js ~ line 104 ~ signUp ~ newUser", newUser)
     await newUser.save()
 
     let token = encodeedToken(newUser._id)
@@ -354,6 +361,31 @@ let resetPassword = async (req, res) => {
 
 }
 
+
+let sendPhoneVerifiedCode = async (req, res) => {
+    let { phoneNumber } = req.body
+    // // let user = req.req.user
+    // let findUser = await UserModel.findOne({ phoneNumber: phoneNumber })
+    // // if (user._id == findUser._id) {
+    // let verifiedCode = generateVerifiedCode()
+    // findUser.phoneCode = verifiedCode
+    // findUser.phoneCodeExpired = addMinWithNow(50)
+    // await findUser.save()
+    await sendSMS()
+    return res.status(200).json({
+        status: 200,
+        message: "",
+        success: true,
+    })
+    // } else {
+    //     return res.status(400).json({
+    //         status: 400,
+    //         message: "",
+    //         success: false,
+    //     })
+    // }
+}
+
 module.exports = {
     login,
     signUp,
@@ -363,5 +395,6 @@ module.exports = {
     onVerifiedEmail,
     forgotPasswordRequest,
     veryfyCodeResetPassword,
-    resetPassword
+    resetPassword,
+    sendPhoneVerifiedCode,
 }
