@@ -4,7 +4,7 @@ let paginateHelper = async (req, model, condiction = {}, populate = [], sort = [
     let page = parseInt(req.query.page)
     let limit = parseInt(req.query.pageSize) > 0 ? parseInt(req.query.pageSize) : PAGE_SIZE
 
-    let startIndex = page * limit
+    let startIndex = (page -1) * limit
     // let endIndex = page * limit
     totalItem = await model.countDocuments(condiction);
     let totalPage = Math.ceil((totalItem) / limit) - 1;
