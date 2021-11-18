@@ -187,7 +187,7 @@ let createOrder = async (req, res) => {
     let { address, phoneNumber, method, items } = req.value.body
     let productIds = items.map(item => item.productId)
 
-    let productCheck = await ProuductModel.find({ productId: { $in: productIds } })
+    let productCheck = await ProuductModel.find({ productId: { $in: produzctIds } })
 
     if (productCheck.length !== productIds.length) {
         return res.status(400).json({
