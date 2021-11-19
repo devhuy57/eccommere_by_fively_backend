@@ -181,14 +181,18 @@ let getAllUsers = async (req, res) => {
     })
 }
 
+let getOrder=async(req,res)=>{
+
+}
 let createOrder = async (req, res) => {
     let uerId = req.user._id
 
     let { address, phoneNumber, method, items } = req.value.body
+
     let productIds = items.map(item => item.productId)
 
-    let productCheck = await ProuductModel.find({ productId: { $in: produzctIds } })
 
+    let productCheck = await ProuductModel.find({ productId: { $in: productIds } })
     if (productCheck.length !== productIds.length) {
         return res.status(400).json({
             status: 400,
@@ -206,10 +210,13 @@ let createOrder = async (req, res) => {
         status: 1,
         method: method,
     })
+    console.log( await order.save());
     await order.save()
 
     items.map(item => {
-        console.log('item:', item)
+        console.log('item:'
+    
+        , item)
         let productItem = productCheck.find(product => product.productId.toString() === item.productId)
         let orderItem = new OrderDetails({
             orderId: order.orderId,
@@ -219,6 +226,7 @@ let createOrder = async (req, res) => {
         })
         orderItem.save()
     })
+    console.log(4);
 
     res.status(200).json({
         status: 200,
@@ -234,5 +242,5 @@ module.exports = {
     addFavorites,
     myFavorites,
     getAllUsers,
-    createOrder
+    createOrder,
 }
