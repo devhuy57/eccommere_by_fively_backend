@@ -6,6 +6,8 @@ const multer = require('multer')
 const storage = require("../middlewares/upload_file")
 const { imageFilter } = require("../helpers/image_filter")
 let cartController = require('../controllers/cart_controller')
+const { validatorBody } = require("../validators/base")
+const userSchemas = require("../validators/user.vadator")
 
 router.route('')
     .get(passport.authenticate('jwt', { session: false }), userController.getAllUsers)
@@ -25,6 +27,8 @@ router.route('/favorites')
     .post(passport.authenticate('jwt', { session: false }), userController.addFavorites)
     .get(passport.authenticate('jwt', { session: false }), userController.myFavorites)
 
-
+router.route("/orders")
+    .get(passport.authenticate('jwt', { session: false }), userController.myOrders)
+    .post(passport.authenticate('jwt', { session: false }), validatorBody(userSchemas.newOrder), userController.createOrder)
 
 module.exports = router
