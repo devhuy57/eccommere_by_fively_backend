@@ -240,16 +240,15 @@ let myOrders = async (req, res) => {
     let user = await OrderModel.aggregate([
         {
             $lookup: {
-                from: 'OrderDetails',
-                localField: '_id',
-                foreignField: 'orderId',
-                as: 'orderItens'
+                from: 'orderdetails',
+                localField: 'orders.orderId',
+                foreignField: 'orderdetails.orderId',
+                as: 'orderItems'
             }
         },
         {
             $match: {
-                logical_delete: { $exists: true },
-                userId: req.user._id
+                userId: `${req.user._id}`
             }
         },
     ])
