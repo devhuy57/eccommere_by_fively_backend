@@ -218,10 +218,11 @@ let createOrder = async (req, res) => {
         , item)
         let productItem = productCheck.find(product => product.productId.toString() === item.productId)
         let orderItem = new OrderDetails({
-            orderId: order.orderId,
             productId: item.productId,
             quantity: item.quantity,
             price: productItem.price,
+            productName:productItem.productName,
+            avatar: productItem.avatar
         })
         orderItem.save()
     })
