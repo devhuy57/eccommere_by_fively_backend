@@ -250,7 +250,26 @@ let myOrders = async (req, res) => {
             $match: {
                 userId: `${req.user._id}`
             }
+        }, {
+            $project: {
+                userId: 1,
+                orderId: 1,
+                address: 1,
+                phoneNumber: 1,
+                status: 1,
+                method: 1,
+                itemQuantity: { $size: "$orderItems" },
+                total: { $sum: "$orderItems.price" },
+                acceptTime: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$acceptTime" } },
+                orderTime: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$acceptTime" } },
+                createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt" } },
+            }
         },
+        {
+            $addFields: {
+                total: { $toString: "$total" }
+            }
+        }
     ])
     res.status(200).json({
         status: 200,
