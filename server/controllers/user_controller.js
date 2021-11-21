@@ -234,6 +234,16 @@ let createOrder = async (req, res) => {
     })
 }
 
+let myOrders = async (req, res) => {
+    let user = await UserModel.findOne(req.user._id).populate('orders')
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: user.orders
+    })
+}
+
 module.exports = {
     profile,
     updateProfile,
@@ -241,4 +251,5 @@ module.exports = {
     myFavorites,
     getAllUsers,
     createOrder,
+    myOrders
 }
