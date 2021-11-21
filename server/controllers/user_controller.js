@@ -210,7 +210,6 @@ let createOrder = async (req, res) => {
         status: 1,
         method: method,
     })
-    console.log( await order.save());
     await order.save()
 
     items.map(item => {
@@ -226,7 +225,6 @@ let createOrder = async (req, res) => {
         })
         orderItem.save()
     })
-    console.log(4);
 
     res.status(200).json({
         status: 200,

@@ -4,7 +4,6 @@ let Schema = mongoose.Schema
 let sequenceSchema = new Schema({
     key: {
         type: String,
-        unique: true,
         transform: unescape
     },
     prefix: {
