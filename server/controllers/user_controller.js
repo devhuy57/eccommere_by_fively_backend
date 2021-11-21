@@ -181,7 +181,7 @@ let getAllUsers = async (req, res) => {
     })
 }
 
-let getOrder=async(req,res)=>{
+let getOrder = async (req, res) => {
 
 }
 let createOrder = async (req, res) => {
@@ -214,15 +214,16 @@ let createOrder = async (req, res) => {
 
     items.map(item => {
         console.log('item:'
-    
-        , item)
+
+            , item)
         let productItem = productCheck.find(product => product.productId.toString() === item.productId)
         let orderItem = new OrderDetails({
             productId: item.productId,
             quantity: item.quantity,
             price: productItem.price,
-            productName:productItem.productName,
-            avatar: productItem.avatar
+            productName: productItem.productName,
+            avatar: productItem.avatar,
+            orderId: order._id
         })
         orderItem.save()
     })
@@ -236,12 +237,27 @@ let createOrder = async (req, res) => {
 }
 
 let myOrders = async (req, res) => {
-    let user = await UserModel.findOne(req.user._id).populate('orders')
+    let user = await OrderModel.aggregate([
+        {
+            $lookup: {
+                from: 'OrderDetails',
+                localField: '_id',
+                foreignField: 'orderId',
+                as: 'orderItens'
+            }
+        },
+        {
+            $match: {
+                logical_delete: { $exists: true },
+                userId: req.user._id
+            }
+        },
+    ])
     res.status(200).json({
         status: 200,
         success: true,
         message: "",
-        data: user.orders
+        data: user
     })
 }
 
