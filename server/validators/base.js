@@ -1,7 +1,9 @@
 let Joi = require('@hapi/joi')
+
 let validatorBody = (schema) => {
     return (req, res, next) => {
         let validatorResult = schema.validate(req.body)
+        console.log(validatorResult)
         if (validatorResult.error) {
             return res.status(400).json(validatorResult.error.details[0].message)
         } else {

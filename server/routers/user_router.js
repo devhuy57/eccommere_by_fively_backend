@@ -28,6 +28,7 @@ router.route('/favorites')
     .get(passport.authenticate('jwt', { session: false }), userController.myFavorites)
 
 router.route("/orders")
+    // .get(passport.authenticate('jwt', { session: false }), userController.getOrder)
     .post(passport.authenticate('jwt', { session: false }), validatorBody(userSchemas.newOrder), userController.createOrder)
 
 module.exports = router
