@@ -279,6 +279,41 @@ let myOrders = async (req, res) => {
     })
 }
 
+let getOrderDetail = async (req, res) => {
+    let { orderId } = req.params
+    let orderDetail = await OrderDetails.aggregate([
+        {
+            $match: {
+                orderId: orderId
+            }
+        }, {
+            $addFields: {
+                price: { $toString: "$price" }
+            }
+        }, {
+            $sort: { productName: 1 }
+        }
+    ])
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: orderDetail
+    })
+}
+
+let deleteOrder = async (req, res) => {
+    let { orderId } = req.params
+    await OrderModel.deleteMany({ orderId: orderId })
+    await OrderDetails.deleteMany({ orderId: orderId })
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: true
+    })
+}
+
 module.exports = {
     profile,
     updateProfile,
@@ -286,5 +321,7 @@ module.exports = {
     myFavorites,
     getAllUsers,
     createOrder,
-    myOrders
+    myOrders,
+    getOrderDetail,
+    deleteOrder
 }

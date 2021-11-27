@@ -31,4 +31,8 @@ router.route("/orders")
     .get(passport.authenticate('jwt', { session: false }), userController.myOrders)
     .post(passport.authenticate('jwt', { session: false }), validatorBody(userSchemas.newOrder), userController.createOrder)
 
+router.route("/order/:orderId")
+    .get(passport.authenticate('jwt', { session: false }), userController.getOrderDetail)
+    .delete(passport.authenticate('jwt', { session: false }), userController.deleteOrder)
+
 module.exports = router
