@@ -269,6 +269,10 @@ let myOrders = async (req, res) => {
             $addFields: {
                 total: { $toString: "$total" }
             }
+        }, {
+            sort: {
+                productName: 1
+            }
         }
     ])
     res.status(200).json({
@@ -279,6 +283,27 @@ let myOrders = async (req, res) => {
     })
 }
 
+let getOrderDetail = async (req, res) => {
+    let { orderId } = req.params
+    let orderDetail = await OrderDetails.aggregate([
+        {
+            $match: {
+                orderId: orderId
+            }
+        }, {
+            $addFields: {
+                price: { $toString: "$price" }
+            }
+        }
+    ])
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: orderDetail
+    })
+}
+
 module.exports = {
     profile,
     updateProfile,
@@ -286,5 +311,6 @@ module.exports = {
     myFavorites,
     getAllUsers,
     createOrder,
-    myOrders
+    myOrders,
+    getOrderDetail
 }
