@@ -10,7 +10,7 @@ async function seedDB() {
         useNewUrlParser: true,
     })
     try {
-        // await categorySeed()
+        await categorySeed()
         await productSeed()
     } catch (err) {
         console.log(err.stack);

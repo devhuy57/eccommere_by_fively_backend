@@ -4,8 +4,6 @@ let Schema = mongoose.Schema;
 let OrderDetailsSchema = new mongoose.Schema({
     orderId: {
         type: String,
-        required: true,
-
     },
     productId: {
         type: String,

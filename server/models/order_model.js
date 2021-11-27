@@ -4,7 +4,6 @@ let orderSchema = new mongoose.Schema({
     userId: {
         type: String,
         required: true,
-        unique: true,
     },
     orderId: {
         type: String,
@@ -47,5 +46,5 @@ let orderSchema = new mongoose.Schema({
     timestamps: true
 })
 
-let OrderModel = mongoose.model('Order', orderSchema);
+let OrderModel = mongoose.model('orders', orderSchema);
 module.exports = OrderModel;
