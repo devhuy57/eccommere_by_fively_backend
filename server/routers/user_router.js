@@ -33,5 +33,6 @@ router.route("/orders")
 
 router.route("/order/:orderId")
     .get(passport.authenticate('jwt', { session: false }), userController.getOrderDetail)
+    .delete(passport.authenticate('jwt', { session: false }), userController.deleteOrder)
 
 module.exports = router

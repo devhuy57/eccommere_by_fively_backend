@@ -269,10 +269,6 @@ let myOrders = async (req, res) => {
             $addFields: {
                 total: { $toString: "$total" }
             }
-        }, {
-            sort: {
-                productName: 1
-            }
         }
     ])
     res.status(200).json({
@@ -294,6 +290,8 @@ let getOrderDetail = async (req, res) => {
             $addFields: {
                 price: { $toString: "$price" }
             }
+        }, {
+            $sort: { productName: 1 }
         }
     ])
     res.status(200).json({
@@ -301,6 +299,18 @@ let getOrderDetail = async (req, res) => {
         success: true,
         message: "",
         data: orderDetail
+    })
+}
+
+let deleteOrder = async (req, res) => {
+    let { orderId } = req.params
+    await OrderModel.deleteMany({ orderId: orderId })
+    await OrderDetails.deleteMany({ orderId: orderId })
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: true
     })
 }
 
@@ -312,5 +322,6 @@ module.exports = {
     getAllUsers,
     createOrder,
     myOrders,
-    getOrderDetail
+    getOrderDetail,
+    deleteOrder
 }
