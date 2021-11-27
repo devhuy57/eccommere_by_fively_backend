@@ -181,7 +181,7 @@ let getAllUsers = async (req, res) => {
     })
 }
 
-let getOrder=async(req,res)=>{
+let getOrder = async (req, res) => {
 
 }
 let createOrder = async (req, res) => {
@@ -214,15 +214,16 @@ let createOrder = async (req, res) => {
 
     items.map(item => {
         console.log('item:'
-    
-        , item)
+
+            , item)
         let productItem = productCheck.find(product => product.productId.toString() === item.productId)
         let orderItem = new OrderDetails({
             productId: item.productId,
             quantity: item.quantity,
             price: productItem.price,
-            productName:productItem.productName,
-            avatar: productItem.avatar
+            productName: productItem.productName,
+            avatar: productItem.avatar,
+            orderId: order._id
         })
         orderItem.save()
     })
@@ -236,12 +237,80 @@ let createOrder = async (req, res) => {
 }
 
 let myOrders = async (req, res) => {
-    let user = await UserModel.findOne(req.user._id).populate('orders')
+    let user = await OrderModel.aggregate([
+        {
+            $lookup: {
+                from: 'orderdetails',
+                localField: 'orders.orderId',
+                foreignField: 'orderdetails.orderId',
+                as: 'orderItems'
+            }
+        },
+        {
+            $match: {
+                userId: `${req.user._id}`
+            }
+        }, {
+            $project: {
+                userId: 1,
+                orderId: 1,
+                address: 1,
+                phoneNumber: 1,
+                status: 1,
+                method: 1,
+                itemQuantity: { $size: "$orderItems" },
+                total: { $sum: "$orderItems.price" },
+                acceptTime: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$acceptTime" } },
+                orderTime: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$acceptTime" } },
+                createdAt: { $dateToString: { format: "%Y-%m-%d %H:%M:%S", date: "$createdAt" } },
+            }
+        },
+        {
+            $addFields: {
+                total: { $toString: "$total" }
+            }
+        }
+    ])
     res.status(200).json({
         status: 200,
         success: true,
         message: "",
-        data: user.orders
+        data: user
+    })
+}
+
+let getOrderDetail = async (req, res) => {
+    let { orderId } = req.params
+    let orderDetail = await OrderDetails.aggregate([
+        {
+            $match: {
+                orderId: orderId
+            }
+        }, {
+            $addFields: {
+                price: { $toString: "$price" }
+            }
+        }, {
+            $sort: { productName: 1 }
+        }
+    ])
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: orderDetail
+    })
+}
+
+let deleteOrder = async (req, res) => {
+    let { orderId } = req.params
+    await OrderModel.deleteMany({ orderId: orderId })
+    await OrderDetails.deleteMany({ orderId: orderId })
+    res.status(200).json({
+        status: 200,
+        success: true,
+        message: "",
+        data: true
     })
 }
 
@@ -252,5 +321,7 @@ module.exports = {
     myFavorites,
     getAllUsers,
     createOrder,
-    myOrders
+    myOrders,
+    getOrderDetail,
+    deleteOrder
 }
