@@ -6,12 +6,13 @@ var serverKey = FCM_SERVER_KEY;
 var fcm = new FCM(serverKey);
 
 if (isMainThread) {
-    module.exports = (message) => {
+    module.exports = (message, token) => {
         return new Promise((resolve, reject) => {
 
             let worker = new Worker(__filename, {
                 workerData: {
-                    message
+                    message,
+                    token,
                 }
             })
             worker.on('message', resolve);
@@ -25,7 +26,7 @@ if (isMainThread) {
     }
 } else {
     var message = {
-        to: 'feA2rLNARgO6LPpYwF29SS:APA91bGzaqSKWog_L5BcWjDxrP7-078P1109KuCaJjPL7tkqzMMfJNBBakNUnAxqaOLtHcrIlMwv0twR6jEV52vMPpbGJfNBvrnsDv1zhSYCJGIhwNO2oIQG2QErl5oEVm7u3LqZVyd0',
+        to: token,
         notification: {
             title: 'NotifcatioTestAPP',
             body: '{"Message from node js app"}',
