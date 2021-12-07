@@ -10,7 +10,7 @@ module.exports = DBConnection = async () => {
         await mongooseClient.connect(MONGOOSE_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
-            // useCreateIndex: true
+            useCreateIndex: true
         })
         console.log("Mongoose connection is successfull!")
     } catch (error) {

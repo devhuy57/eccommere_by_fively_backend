@@ -1,6 +1,7 @@
 const { PAGE_SIZE } = require("../configs/app_config")
 
 let paginateHelper = async (req, model, condiction = {}, populate = [], sort = []) => {
+console.log("🚀 ~ file: paginate_helper.js ~ line 4 ~ paginateHelper ~ condiction", condiction)
     let page = parseInt(req.query.page)
     let limit = parseInt(req.query.pageSize) > 0 ? parseInt(req.query.pageSize) : PAGE_SIZE
 

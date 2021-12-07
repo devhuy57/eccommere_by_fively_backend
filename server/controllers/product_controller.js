@@ -5,6 +5,7 @@ let mongoose = require('mongoose')
 const { converterServerToRealPath } = require('../helpers/converter_helper')
 const CategoryModel = require('../models/category_model')
 const generateSequence = require('../helpers/sequence_helper')
+const { PAGE_SIZE } = require('../configs/app_config')
 
 let createProduct = async (req, res) => {
     let { productName, description, price, quantity, categoryIds } = req.body
@@ -58,6 +59,7 @@ let deleteProduct = async (req, res) => {
 }
 
 let product = async (req, res) => {
+
     let products = await ProductModel.findOne({ productId: req.params.productId }).populate(['categories', 'attributes'])
     res.status(200).json({
         status: 200,
@@ -68,12 +70,64 @@ let product = async (req, res) => {
 }
 
 let products = async (req, res) => {
-    condiction = {}
+    let page = parseInt(req.query.page)
+    let limit = parseInt(req.query.pageSize) > 0 ? parseInt(req.query.pageSize) : PAGE_SIZE
+    let startIndex = (page - 1) * limit
+
+    let condiction = {}
+
+    // check search condiction
     if (req.query.search && req.query.search !== "undefined") {
-        condiction.productName = { $regex: new RegExp(req.query.search, 'i') }
+        condiction = {
+            $or: [
+                { productName: { $regex: new RegExp(req.query.search, 'i') }, },
+                { description: { $regex: new RegExp(req.query.search, 'i') }, },
+                { 'categories.name': { $regex: new RegExp(req.query.search, 'i') }, },
+            ]
+        }
     }
 
-    let products = await paginateHelper(req, ProductModel, condiction, ['categories'], { productName: 0 })
+    // let products = await paginateHelper(req, ProductModel, condiction, ['categories'], { productName: 0 })
+    let products = await ProductModel.aggregate([
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categories',
+                foreignField: '_id',
+                as: 'categories'
+            }
+        }, {
+            $lookup: {
+                from: 'product_attrs',
+                localField: 'attributes',
+                foreignField: '_id',
+                as: 'attributes'
+            }
+        }, {
+            $match: condiction,
+        }, {
+            $project: {
+                productName: 1,
+                categories: 1,
+                description: 1,
+                attributes: 1,
+                avatar: 1,
+                price: 1,
+                productId: 1,
+                sale: 1,
+                rating: 1,
+                background: 1,
+                quantity: 1,
+                price: 1,
+            }
+        }, {
+            $addFields: {
+                price: { $toString: "$price" }
+            }
+        },
+        { $skip: parseInt(page) },
+        { $limit: parseInt(limit) },
+    ])
     res.status(200).json({
         status: 200,
         success: true,

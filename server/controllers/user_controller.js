@@ -211,11 +211,7 @@ let createOrder = async (req, res) => {
         method: method,
     })
     await order.save()
-
     items.map(item => {
-        console.log('item:'
-
-            , item)
         let productItem = productCheck.find(product => product.productId.toString() === item.productId)
         let orderItem = new OrderDetails({
             productId: item.productId,
